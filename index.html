@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Exemple HTML 5</title>
+        <script src="js/modernizr-custom.min.js"></script>
+        <script type="text/javascript">
+            function start(){
+                function display(obj){
+                    //on ne peut pas faire d'iteration sur une chaine donc on va transformer la chaine tableau en objet
+                    var data = JSON.parse(obj);
+                    var tableau = document.getElementById("lequipe");                                                        
+                    for(var i=0;i<data.articles.length;i++){                            
+                        tableau.innerHTML += "<tr><td>"+data.articles[i].titre+"</td></tr>";
+                    }
+                }
+                if(Modernizr.localstorage){
+                    console.log('localStorage supporté');
+                    //appel a une API et recuperer les données
+                    var xhttp = new XMLHttpRequest();
+                    //en javascript les fonctions sont de simples variables donc on peut faire :
+                    xhttp.onreadystatechange = function(){
+                        if(this.readyState == 4 && this.status == 200){
+                            localStorage["dataequipe"] = xhttp.responseText;
+                            display(xhttp.responseText);
+                        }
+                    }
+                    xhttp.open("GET","http://iphdata.lequipe.fr/iPhoneDatas/EFR/STD/ALL/V2/home.json");
+                    //si je suis en ligne
+                    if(navigator.onLine){
+                        xhttp.send();
+                    }else{
+                        var tmp = localStorage["dataequipe"];
+                        display(tmp);
+                    }
+                }else{
+                    console.log("localStorage non supporté");
+                }
+            }
+        </script>
+    </head>
+    <body onload="start()">
+        <table id="lequipe"></table>
+    </body>
+</html>
